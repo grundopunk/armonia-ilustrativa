@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Nueve patrones de armonía ilustrados e interactivos, con audio.">
+<title>Atlas armónico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: atlas de láminas — cada lámina = texto corto a la izquierda + figura interactiva con audio a la derecha */
+:root{
+  --bg:#EDF0F3; --panel:#FFFFFF; --ink:#142033; --muted:#5A6577; --line:#CDD4DE; --band:#DCE3EC;
+  --maj:#D9432A; --min:#2A5FD4; --dim:#8640BE; --aug:#0A8F7B; --dom:#B67C00; --sus:#B4407A;
+  --f-display:"Bricolage Grotesque", "Arial Narrow", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E131B; --panel:#151C27; --ink:#E6EBF2; --muted:#98A3B5; --line:#2A3446; --band:#1E2836;
+  --maj:#FF6A4D; --min:#6F9BFF; --dim:#B57AEB; --aug:#2CC8AE; --dom:#EDB33C; --sus:#E679AA; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E131B; --panel:#151C27; --ink:#E6EBF2; --muted:#98A3B5; --line:#2A3446; --band:#1E2836;
+  --maj:#FF6A4D; --min:#6F9BFF; --dim:#B57AEB; --aug:#2CC8AE; --dom:#EDB33C; --sus:#E679AA; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.6 var(--f-body);padding-inline:20px;padding-block:0 64px}
+.wrap{max-width:1180px;margin:0 auto}
+header{padding-block:56px 28px;display:grid;gap:18px}
+.eyebrow{font:500 12px var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+h1{font:800 clamp(44px,8vw,96px)/.92 var(--f-display);letter-spacing:-.02em;margin:0;text-wrap:balance}
+h1 .q{color:var(--maj)} h1 .r{color:var(--min)} h1 .s{color:var(--aug)}
+.lede{max-width:62ch;color:var(--muted);margin:0;font-size:17px}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font:500 13px var(--f-mono);color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.legend i{width:12px;height:12px;border-radius:50%;border:2px solid currentColor;display:inline-block}
+.index{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;padding-block:8px 36px}
+.index a{display:grid;gap:2px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--ink);text-decoration:none;min-width:0}
+.index a:hover,.index a:focus-visible{border-color:var(--ink);outline:none}
+.index b{font:700 16px var(--f-display)} .index small{color:var(--muted);font-size:13px;line-height:1.45}
+.index em{font:500 11px var(--f-mono);color:var(--muted);font-style:normal;letter-spacing:.06em}
+.lam{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.75fr);gap:36px;padding-block:52px;border-top:1px solid var(--line);align-items:start}
+.copy{display:grid;gap:12px;min-width:0;position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px)}
+.copy h2{font:700 clamp(28px,3.4vw,40px)/1.02 var(--f-display);margin:0;letter-spacing:-.01em;text-wrap:balance}
+.copy p{margin:0;max-width:52ch}
+.copy .src{font:400 13px/1.5 var(--f-mono);color:var(--muted)}
+.copy ul{margin:0;padding-left:18px;display:grid;gap:4px;font-size:15px}
+.fig{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;display:grid;gap:12px;min-width:0}
+.fig svg{width:100%;height:auto;display:block;overflow:visible}
+.ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ctl .lab{font:500 12px var(--f-mono);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-right:2px}
+button,select{font:500 13px var(--f-mono);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:7px 13px;cursor:pointer}
+button:hover,select:hover{border-color:var(--ink)}
+button:focus-visible,select:focus-visible{outline:2px solid var(--min);outline-offset:2px}
+button.on{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+button.play{border-color:var(--ink)}
+.info{font:400 13.5px/1.6 var(--f-mono);color:var(--muted);min-height:3.2em;border-top:1px dashed var(--line);padding-top:10px}
+.info b{color:var(--ink);font-weight:500}
+.lb{font:500 11px var(--f-mono);fill:var(--muted)}
+.nm{font:600 13px var(--f-body);fill:currentColor}
+.sm{font:500 10.5px var(--f-mono);fill:currentColor}
+.big{font:700 24px var(--f-display);fill:var(--ink)}
+.mid{font:500 13px var(--f-mono);fill:var(--muted)}
+.tc{font:500 10.5px var(--f-body);fill:var(--muted);pointer-events:none}
+.tc.on{fill:var(--panel);font-weight:600}
+.tc.nb{fill:var(--ink);font-weight:600}
+.nd{cursor:pointer;outline:none}
+.nd circle,.nd rect{fill:var(--panel);stroke:currentColor;stroke-width:1.8;transition:fill .15s}
+.nd.on circle,.nd.on rect{fill:currentColor}
+.nd.on text{fill:var(--panel)}
+.nd.ghost{opacity:.28}
+.nd.alt circle,.nd.alt rect{stroke-dasharray:4 3;stroke-width:2.6}
+.nd:hover circle,.nd:hover rect,.nd:focus-visible circle,.nd:focus-visible rect{stroke-width:3.4}
+.edge{stroke:var(--line);stroke-width:1.4;fill:none}
+.edge.hot{stroke:var(--ink);stroke-width:2.2}
+.arr{stroke:var(--muted);stroke-width:1.4;fill:none}
+.tri{stroke:var(--line);stroke-width:1;cursor:pointer;transition:fill-opacity .15s}
+.vx{fill:var(--panel);stroke:var(--line)}
+.band{fill:none;stroke:var(--band);stroke-linecap:round}
+footer{border-top:1px solid var(--line);padding-block:28px;color:var(--muted);font-size:14px;max-width:70ch}
+@media (max-width:860px){.lam{grid-template-columns:minmax(0,1fr);gap:20px;padding-block:40px}.copy{position:static}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">9 patrones · 91 gráficos analizados</div>
+  <h1>Atlas <span class="q">ar</span><span class="r">mó</span><span class="s">ni</span>co</h1>
+  <p class="lede">Cada lámina toma un patrón de tus imágenes y lo convierte en una figura que puedes tocar. Haz clic en cualquier acorde para escucharlo. Los colores indican la calidad del acorde.</p>
+  <div class="legend" aria-label="Leyenda de colores">
+    <span style="color:var(--maj)"><i></i>mayor</span><span style="color:var(--min)"><i></i>menor</span>
+    <span style="color:var(--dim)"><i></i>disminuido</span><span style="color:var(--aug)"><i></i>aumentado</span>
+    <span style="color:var(--dom)"><i></i>dominante 7</span><span style="color:var(--sus)"><i></i>suspendido y otros</span>
+  </div>
+</header>
+
+<nav class="index" aria-label="Patrones">
+  <a href="#tonnetz"><em>Lámina I</em><b>Transformaciones P, R, L</b><small>Cada acorde tiene 3 vecinos a una nota de distancia.</small></a>
+  <a href="#cadena"><em>Lámina II</em><b>Cadena de terceras</b><small>Una tonalidad es una ventana de 7 acordes que gira.</small></a>
+  <a href="#hexagono"><em>Lámina III</em><b>Hexágono diatónico</b><small>Dominantes secundarios y préstamo del menor.</small></a>
+  <a href="#bartok"><em>Lámina IV</em><b>Ejes de Bartók</b><small>4 acordes que cumplen la misma función.</small></a>
+  <a href="#modal"><em>Lámina V</em><b>Cartografía modal</b><small>21 modos unidos cuando cambian una sola nota.</small></a>
+  <a href="#familia"><em>Lámina VI</em><b>La familia de un acorde</b><small>12 acordes de 3 notas sobre la misma raíz.</small></a>
+  <a href="#aumentado"><em>Lámina VII</em><b>El aumentado bisagra</b><small>Una nota que sube o baja abre 6 caminos.</small></a>
+  <a href="#quintas"><em>Lámina VIII</em><b>Ventanas de quintas</b><small>sus2 = sus4, pentatónicas y escalas mayores.</small></a>
+  <a href="#escalera"><em>Lámina IX</em><b>Escalera de terceras</b><small>Acordes extendidos y tríadas superiores.</small></a>
+</nav>
+
+<section class="lam" id="tonnetz">
+  <div class="copy">
+    <div class="eyebrow">Lámina I · teoría neo-riemanniana</div>
+    <h2>Tres vecinos a una nota</h2>
+    <p>Cada triángulo es una tríada. Los tres triángulos que comparten un lado con él son sus vecinos: comparten dos notas y mueven solo una.</p>
+    <ul>
+      <li><b>P</b> (paralelo): C ↔ Cm, la tercera se mueve medio tono.</li>
+      <li><b>R</b> (relativo): C ↔ Am, la quinta sube un tono.</li>
+      <li><b>L</b> (intercambio de sensible): C ↔ Em, la raíz baja medio tono.</li>
+    </ul>
+    <p class="src">En tus imágenes: los árboles que salen de C hacia Cm, Am y Em, y las redes de “acordes con dos notas en común”.</p>
+  </div>
+  <div class="fig">
+    <svg id="tz" viewBox="0 0 640 400" role="img" aria-label="Red de tríadas (Tonnetz) interactiva"></svg>
+    <div class="ctl"><span class="lab">Mover</span><button data-op="P">P</button><button data-op="R">R</button><button data-op="L">L</button>
+      <button class="play" id="tzPlay">▶ Escuchar recorrido</button><button id="tzReset">Reiniciar</button></div>
+    <div class="ctl"><span class="lab">Ciclos</span><button data-seq="PLPLPL">PL · hexatónico</button><button data-seq="PRPRPRPR">PR · octatónico</button><button data-seq="RLRLRLRLRLRL">RL · cadena de terceras</button></div>
+    <div class="info" id="tzInfo"></div>
+  </div>
+</section>
+
+<section class="lam" id="cadena">
+  <div class="copy">
+    <div class="eyebrow">Lámina II · plantilla giratoria</div>
+    <h2>La tonalidad es una ventana</h2>
+    <p>Si alternas mayor y menor subiendo por terceras (C, Em, G, Bm…) obtienes una cadena circular de 24 acordes. Siete eslabones seguidos son los acordes de una tonalidad. El séptimo (Bm) se convierte en B°.</p>
+    <p>Al girar la ventana un paso de quinta, la tonalidad vecina comparte cuatro acordes con la anterior. Esos acordes son los pivotes naturales para modular.</p>
+    <p class="src">En tus imágenes: “Acordes tonalidad de C / G / D”, “Rotando el template”, “El Em está en C, G y D”.</p>
+  </div>
+  <div class="fig">
+    <svg id="ch" viewBox="0 0 640 450" role="img" aria-label="Círculo de la cadena de terceras con la ventana de la tonalidad"></svg>
+    <div class="ctl"><span class="lab">Tonalidad</span><button id="chPrev" aria-label="Una quinta abajo">◀</button><select id="chKey" aria-label="Tonalidad"></select><button id="chNext" aria-label="Una quinta arriba">▶</button>
+      <button id="chCmp">Comparar con la vecina</button><button class="play" id="chPlay">▶ Escuchar</button></div>
+    <div class="info" id="chInfo"></div>
+  </div>
+</section>
+
+<section class="lam" id="hexagono">
+  <div class="copy">
+    <div class="eyebrow">Lámina III · funciones</div>
+    <h2>Seis acordes y sus satélites</h2>
+    <p>Los seis acordes diatónicos forman un hexágono. Cada uno puede tener su propio dominante (V7 de…), que lo prepara desde afuera. El menor paralelo aporta otros siete colores para el préstamo modal.</p>
+    <p>Haz clic en un satélite: escucharás cómo resuelve hacia su acorde.</p>
+    <p class="src">En tus imágenes: “Dominantes secundarios”, “Acordes escala mayor”, “Esc. menor”.</p>
+  </div>
+  <div class="fig">
+    <svg id="hx" viewBox="0 0 640 450" role="img" aria-label="Hexágono de acordes diatónicos con dominantes secundarios"></svg>
+    <div class="ctl"><span class="lab">Tonalidad</span><select id="hxKey" aria-label="Tonalidad"></select>
+      <button id="hxDom" class="on">Dominantes secundarios</button><button id="hxBor">Préstamo del menor</button></div>
+    <div class="info" id="hxInfo"></div>
+  </div>
+</section>
+
+<section class="lam" id="bartok">
+  <div class="copy">
+    <div class="eyebrow">Lámina IV · simetría</div>
+    <h2>Ejes de Bartók</h2>
+    <p>Sobre el círculo de quintas, cada función (tónica, subdominante, dominante) es una cruz. Sus cuatro puntas están a distancia de tercera menor y se pueden sustituir entre sí.</p>
+    <p>El polo opuesto de cada punta está a un tritono: de ahí sale el sustituto tritonal.</p>
+    <p class="src">En tus imágenes: “Ejes de Bartók” con las cruces sobre el círculo.</p>
+  </div>
+  <div class="fig">
+    <svg id="bt" viewBox="0 0 640 430" role="img" aria-label="Círculo de quintas con los tres ejes de Bartók"></svg>
+    <div class="ctl"><span class="lab">Tónica</span><select id="btKey" aria-label="Tónica"></select>
+      <button class="play" data-ax="0">▶ Eje T</button><button class="play" data-ax="5">▶ Eje S</button><button class="play" data-ax="7">▶ Eje D</button><button class="play" id="btCad">▶ Cadencia sustituta</button></div>
+    <div class="info" id="btInfo"></div>
+  </div>
+</section>
+
+<section class="lam" id="modal">
+  <div class="copy">
+    <div class="eyebrow">Lámina V · escalas madre</div>
+    <h2>Mapa de 21 modos</h2>
+    <p>Todos los modos de la escala mayor, la menor melódica y la menor armónica, sobre C. Dos modos se conectan si difieren en una sola nota.</p>
+    <p>La altura mide el brillo: si una nota sube, el modo queda más arriba; si baja, más abajo. Lidia arriba, Locria abajo.</p>
+    <p class="src">En tus imágenes: “Cartografía modal”, “Dos modos están conectados si solo varían en una nota”, “Escala madre”.</p>
+  </div>
+  <div class="fig">
+    <svg id="md" viewBox="0 0 640 500" role="img" aria-label="Grafo de modos conectados por una nota"></svg>
+    <div class="info" id="mdInfo"></div>
+  </div>
+</section>
+
+<section class="lam" id="familia">
+  <div class="copy">
+    <div class="eyebrow">Lámina VI · mismas raíz, una nota</div>
+    <h2>La familia de un acorde</h2>
+    <p>Con una raíz fija, la nota del medio puede ser 2, b3, 3 o 4, y la de arriba b5, 5 o #5. Eso da 12 tríadas. En la cuadrícula, cada paso horizontal o vertical mueve una sola nota medio tono.</p>
+    <p>Elige un par de notas y verás qué acordes las contienen: C y G (quinta justa) aparecen en Csus2, Cm, C y Csus4.</p>
+    <p class="src">En tus imágenes: la estrella de C con “C &amp; G perf. 5th”, “C &amp; E”, “C &amp; Eb”, “C &amp; Gb dim”, “C &amp; D sus2”, “C &amp; F sus4”, “Csus4 y Fsus2 tienen las mismas notas”.</p>
+  </div>
+  <div class="fig">
+    <svg id="fm" viewBox="0 0 640 400" role="img" aria-label="Cuadrícula de las 12 tríadas sobre una raíz"></svg>
+    <div class="ctl"><span class="lab">Raíz</span><select id="fmKey" aria-label="Raíz"></select></div>
+    <div class="ctl" id="fmPairs"><span class="lab">Par</span></div>
+    <div class="info" id="fmInfo"></div>
+  </div>
+</section>
+
+<section class="lam" id="aumentado">
+  <div class="copy">
+    <div class="eyebrow">Lámina VII · bisagra</div>
+    <h2>El aumentado abre seis puertas</h2>
+    <p>Baja cualquiera de sus tres notas medio tono y obtienes un acorde mayor. Súbela y obtienes un menor. Cada par que sale de la misma nota es un par relativo: C y Am, Ab y Fm, E y C#m.</p>
+    <p>Como sus tres notas están a la misma distancia, C+ = E+ = G#+. Por eso conecta tonalidades lejanas sin esfuerzo.</p>
+    <p class="src">En tus imágenes: “Subiendo una de sus notas obtienes un acorde menor”, “Si a un aumentado le bajas una nota…”, “Progresión 5 → 1 o 5⁷ → 5+ → 1”.</p>
+  </div>
+  <div class="fig">
+    <svg id="au" viewBox="0 0 640 440" role="img" aria-label="Acorde aumentado y sus seis resoluciones"></svg>
+    <div class="ctl"><span class="lab">Aumentado</span><span id="auSel"></span>
+      <button class="play" id="auAll">▶ Las seis</button><button class="play" id="auDom"></button></div>
+    <div class="info" id="auInfo"></div>
+  </div>
+</section>
+
+<section class="lam" id="quintas">
+  <div class="copy">
+    <div class="eyebrow">Lámina VIII · apilar quintas</div>
+    <h2>Ventanas sobre el círculo</h2>
+    <p>Tres quintas seguidas son un acorde suspendido con dos nombres: F C G = Fsus2 = Csus4. Cinco quintas dan una pentatónica. Siete dan una escala mayor completa.</p>
+    <p>Haz clic en una nota para mover la ventana.</p>
+    <p class="src">En tus imágenes: el círculo de suspendidos (C2, C4, D2, D4…), “Versión suspendida de C/U”, “Usan notas fuera de la escala”.</p>
+  </div>
+  <div class="fig">
+    <svg id="qt" viewBox="0 0 640 430" role="img" aria-label="Círculo de quintas con ventana de notas"></svg>
+    <div class="ctl"><span class="lab">Tamaño</span><button data-n="3" class="on">3 · sus</button><button data-n="5">5 · pentatónica</button><button data-n="7">7 · escala</button><button class="play" id="qtPlay">▶ Escuchar</button></div>
+    <div class="info" id="qtInfo"></div>
+  </div>
+</section>
+
+<section class="lam" id="escalera">
+  <div class="copy">
+    <div class="eyebrow">Lámina IX · extensiones</div>
+    <h2>Escalera de terceras</h2>
+    <p>Apila terceras desde cualquier grado de la escala: 3 notas dan la tríada, 4 la cuatríada, y de 5 a 7 aparecen las tensiones 9, 11 y 13.</p>
+    <p>Las notas de arriba forman otro acorde. C(9,11,13) lleva un Dm7 en la parte superior; por eso un acorde puede “contener” a su vecino.</p>
+    <p class="src">En tus imágenes: el heptágono de extensiones y “C(add9,11,13) / Dm7(add9,11)” con el teclado.</p>
+  </div>
+  <div class="fig">
+    <svg id="es" viewBox="0 0 640 420" role="img" aria-label="Escalera de terceras con nombres de acordes"></svg>
+    <div class="ctl"><span class="lab">Tonalidad</span><select id="esKey" aria-label="Tonalidad"></select><span class="lab">Grado</span><span id="esDeg"></span></div>
+    <div class="ctl"><span class="lab">Notas</span><span id="esN"></span><button class="play" id="esPlay">▶ Escuchar</button></div>
+    <div class="info" id="esInfo"></div>
+  </div>
+</section>
+
+<footer>Patrones identificados en los gráficos de <i>Armonía Ilustrada</i> de Brian Callipari. Las figuras de esta página son ilustraciones nuevas, calculadas a partir de la teoría. El audio es una síntesis simple del navegador.</footer>
+</div>
+
+<script>
+const NN=['C','Db','D','Eb','E','F','F#','G','Ab','A','Bb','B'];
+const m12=x=>((x%12)+12)%12;
+const QI={M:[0,4,7],m:[0,3,7],d:[0,3,6],a:[0,4,8],'7':[0,4,7,10]};
+const QS={M:'',m:'m',d:'°',a:'+','7':'7'};
+const QC={M:'var(--maj)',m:'var(--min)',d:'var(--dim)',a:'var(--aug)','7':'var(--dom)',s:'var(--sus)'};
+const cn=(r,q)=>NN[m12(r)]+QS[q];
+const notesOf=(r,ivs)=>ivs.map(i=>NN[m12(r+i)]).join(' ');
+const NS='http://www.w3.org/2000/svg';
+const $=id=>document.getElementById(id);
+function E(tag,a,p){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+function T(p,x,y,s,cls,extra){const t=E('text',Object.assign({x,y,class:cls||'lb','text-anchor':'middle','dominant-baseline':'central'},extra||{}),p);t.textContent=s;return t}
+function keyable(g,label){g.setAttribute('tabindex','0');g.setAttribute('role','button');g.setAttribute('aria-label',label);
+  g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();g.dispatchEvent(new MouseEvent('click'))}})}
+function node(p,x,y,label,q,r){const g=E('g',{class:'nd'},p);g.style.color=QC[q]||q;E('circle',{cx:x,cy:y,r:r||20},g);T(g,x,y,label,'nm');keyable(g,label);return g}
+function rnode(p,x,y,w,h,l1,l2,q){const g=E('g',{class:'nd'},p);g.style.color=QC[q]||q;E('rect',{x:x-w/2,y:y-h/2,width:w,height:h,rx:9},g);
+  if(l2){T(g,x,y-8,l1,'nm');T(g,x,y+10,l2,'sm')}else T(g,x,y,l1,'nm');keyable(g,l1);return g}
+function defs(svg){const d=E('defs',{},svg);const mk=E('marker',{id:svg.id+'Ar',viewBox:'0 0 10 10',refX:8,refY:5,markerWidth:7,markerHeight:7,orient:'auto-start-reverse'},d);
+  E('path',{d:'M1 1L9 5L1 9',fill:'none',stroke:'var(--muted)','stroke-width':1.6,'stroke-linecap':'round','stroke-linejoin':'round'},mk);return 'url(#'+svg.id+'Ar)'}
+function seg(p,x1,y1,x2,y2,s1,s2,a){const dx=x2-x1,dy=y2-y1,d=Math.hypot(dx,dy)||1;
+  return E('line',Object.assign({x1:x1+dx*s1/d,y1:y1+dy*s1/d,x2:x2-dx*s2/d,y2:y2-dy*s2/d},a),p)}
+const pol=(cx,cy,r,deg)=>[cx+r*Math.cos(deg*Math.PI/180),cy+r*Math.sin(deg*Math.PI/180)];
+function arcPath(cx,cy,r,a1,a2){const [x1,y1]=pol(cx,cy,r,a1),[x2,y2]=pol(cx,cy,r,a2);return `M${x1} ${y1}A${r} ${r} 0 ${(a2-a1)>180?1:0} 1 ${x2} ${y2}`}
+function fillKeys(sel,suffix,val){NN.forEach((n,i)=>{const o=document.createElement('option');o.value=i;o.textContent=n+(suffix||'');sel.appendChild(o)});sel.value=val||0}
+
+/* ---------- audio ---------- */
+let AC,MS;
+function ctx(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();const c=AC.createDynamicsCompressor();MS=AC.createGain();MS.gain.value=.55;MS.connect(c);c.connect(AC.destination)}catch(e){return null}}
+  if(AC.state==='suspended')AC.resume();return AC}
+function tone(m,t,d,v){const a=ctx();if(!a)return;const o=a.createOscillator(),o2=a.createOscillator(),g=a.createGain(),g2=a.createGain();
+  const f=440*Math.pow(2,(m-69)/12);o.type='triangle';o2.type='sine';o.frequency.value=f;o2.frequency.value=f*2;g2.gain.value=.12;
+  o.connect(g);o2.connect(g2);g2.connect(g);g.connect(MS);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.02);g.gain.exponentialRampToValueAtTime(v*.4,t+.35);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+  o.start(t);o2.start(t);o.stop(t+d+.05);o2.stop(t+d+.05)}
+function chordAt(root,ivs,t,d){const base=57+m12(root-9);ivs.forEach(iv=>tone(base+iv,t,d,.085));tone(40+m12(root-4),t,d,.12)}
+function playChords(list,step){const a=ctx();if(!a)return;step=step||.85;const t0=a.currentTime+.05;list.forEach((c,i)=>chordAt(c[0],c[1],t0+i*step,step*.97))}
+function playMidi(seq,step,dur){const a=ctx();if(!a)return;const t0=a.currentTime+.05;seq.forEach((m,i)=>{(Array.isArray(m)?m:[m]).forEach(n=>tone(n,t0+i*step,dur||step*1.6,.1))})}
+function playScale(root,ivs){const b=60+root-(root>6?12:0);playMidi([...ivs.map(i=>b+i),b+12],.2,.5)}
+const nameMove=(a,b)=>{const out=a.filter(x=>!b.includes(x)),inn=b.filter(x=>!a.includes(x));if(out.length!==1)return'';
+  const d=m12(inn[0]-out[0]);const up=d<=6;const amt=Math.min(d,12-d)===1?'medio tono':'un tono';return `${NN[out[0]]} ${up?'sube':'baja'} ${amt} a ${NN[inn[0]]}`};
+const pcs=(r,q)=>QI[q].map(i=>m12(r+i));
+
+/* ---------- I. Tonnetz ---------- */
+(function(){
+  const svg=$('tz'),W=62,H=W*.866,x0=34,y0=372,IC=3,JC=3;
+  const pts={};
+  for(let j=0;j<=6;j++)for(let i=-6;i<=12;i++){const x=x0+i*W+j*W/2,y=y0-j*H;if(x<24||x>616)continue;pts[i+','+j]={i,j,x,y,p:m12(7*(i-IC)+4*(j-JC))}}
+  const P=(i,j)=>pts[i+','+j];
+  const tris=new Map();
+  for(const k in pts){const {i,j}=pts[k];
+    if(P(i+1,j)&&P(i,j+1))tris.set('U'+i+','+j,{t:'U',i,j,v:[P(i,j),P(i+1,j),P(i,j+1)],root:P(i,j).p,q:'M'});
+    if(P(i+1,j)&&P(i,j+1)&&P(i+1,j+1))tris.set('D'+i+','+j,{t:'D',i,j,v:[P(i+1,j),P(i,j+1),P(i+1,j+1)],root:P(i,j+1).p,q:'m'})}
+  const gT=E('g',{},svg),gTr=E('g',{},svg),gV=E('g',{},svg),gL=E('g',{},svg);
+  tris.forEach(tr=>{tr.cx=(tr.v[0].x+tr.v[1].x+tr.v[2].x)/3;tr.cy=(tr.v[0].y+tr.v[1].y+tr.v[2].y)/3;
+    tr.el=E('polygon',{points:tr.v.map(p=>p.x+','+p.y).join(' '),class:'tri','fill-opacity':.07},gT);tr.el.style.fill=QC[tr.q];
+    tr.lab=T(gL,tr.cx,tr.cy,cn(tr.root,tr.q),'tc');
+    tr.el.addEventListener('click',()=>{go(tr,null);playChords([[tr.root,QI[tr.q]]])})});
+  for(const k in pts){const p=pts[k];E('circle',{cx:p.x,cy:p.y,r:11,class:'vx'},gV);T(gV,p.x,p.y,NN[p.p],'lb')}
+  const plr=(r,q,op)=>q==='M'?{P:[r,'m'],R:[r+9,'m'],L:[r+4,'m']}[op]:{P:[r,'M'],R:[r+3,'M'],L:[r+8,'M']}[op];
+  function nbr(tr,op){const {i,j}=tr;const k=tr.t==='U'?{P:'D'+i+','+(j-1),R:'D'+(i-1)+','+j,L:'D'+i+','+j}[op]:{P:'U'+i+','+(j+1),R:'U'+(i+1)+','+j,L:'U'+i+','+j}[op];
+    if(tris.has(k))return tris.get(k);const [r,q]=plr(tr.root,tr.q,op);let best=null,bd=1e9;
+    tris.forEach(t=>{if(t.root===m12(r)&&t.q===q){const d=Math.hypot(t.cx-320,t.cy-200);if(d<bd){bd=d;best=t}}});return best}
+  let cur=tris.get('U'+IC+','+JC),hist=[cur],last='';
+  function render(){tris.forEach(t=>{t.el.setAttribute('fill-opacity',.07);t.lab.setAttribute('class','tc');t.lab.textContent=cn(t.root,t.q)});
+    hist.forEach(t=>t.el.setAttribute('fill-opacity',.22));
+    ['P','R','L'].forEach(op=>{const n=nbr(cur,op);n.el.setAttribute('fill-opacity',.3);n.lab.setAttribute('class','tc nb');n.lab.textContent=op+' · '+cn(n.root,n.q)});
+    cur.el.setAttribute('fill-opacity',.9);cur.lab.setAttribute('class','tc on');
+    gTr.innerHTML='';const h=hist.slice(-14);if(h.length>1)E('polyline',{points:h.map(t=>t.cx+','+t.cy).join(' '),fill:'none',stroke:'var(--ink)','stroke-width':2,'stroke-dasharray':'2 5','stroke-linecap':'round',opacity:.7},gTr);
+    $('tzInfo').innerHTML=`<b>${cn(cur.root,cur.q)}</b> = ${notesOf(cur.root,QI[cur.q])}${last?' · '+last:''}<br>Recorrido: ${hist.slice(-12).map(t=>cn(t.root,t.q)).join(' → ')}`}
+  function go(tr,op){const prev=cur;cur=tr;hist.push(tr);if(hist.length>40)hist.shift();
+    last=op?`${op}: ${cn(prev.root,prev.q)} → ${cn(tr.root,tr.q)}, ${nameMove(pcs(prev.root,prev.q),pcs(tr.root,tr.q))}`:'';render()}
+  function step(op){go(nbr(cur,op),op);playChords([[cur.root,QI[cur.q]]])}
+  document.querySelectorAll('#tonnetz [data-op]').forEach(b=>b.onclick=()=>step(b.dataset.op));
+  let timer=null;
+  document.querySelectorAll('#tonnetz [data-seq]').forEach(b=>b.onclick=()=>{clearInterval(timer);const s=b.dataset.seq.split('');hist=[cur];playChords([[cur.root,QI[cur.q]]]);let k=0;
+    timer=setInterval(()=>{if(k>=s.length){clearInterval(timer);return}step(s[k++])},720)});
+  $('tzPlay').onclick=()=>playChords(hist.slice(-12).map(t=>[t.root,QI[t.q]]),.7);
+  $('tzReset').onclick=()=>{clearInterval(timer);cur=tris.get('U'+IC+','+JC);hist=[cur];last='';render()};
+  render();
+})();
+
+/* ---------- II. Cadena de terceras ---------- */
+(function(){
+  const svg=$('ch'),cx=320,cy=222,R=168;const ar=defs(svg);
+  const seq=[];for(let n=0;n<12;n++){seq.push([m12(7*n),'M']);seq.push([m12(7*n+4),'m'])}
+  const ang=k=>-90+k*15;
+  const gB=E('g',{},svg),gN=E('g',{},svg),gC=E('g',{},svg);
+  const nodes=seq.map((c,k)=>{const [x,y]=pol(cx,cy,R,ang(k));const g=node(gN,x,y,cn(c[0],c[1]),c[1],19);g.onclick=()=>playChords([[c[0],QI[c[1]]]]);return g});
+  let key=0,cmp=false;const sel=$('chKey');fillKeys(sel,' mayor',0);
+  const win=r=>{const n=m12(7*r);return[-3,-2,-1,0,1,2].map(d=>(2*n+d+48)%24)};
+  function draw(){gB.innerHTML='';gC.innerHTML='';const w=win(key),n2=m12(7*key),a1=ang(2*n2-3),a2=ang(2*n2+3);
+    E('path',{d:arcPath(cx,cy,R,a1-8,a2-7+0.01),class:'band','stroke-width':54},gB);
+    let w2=[];if(cmp){w2=win(key+7);const n3=m12(7*(key+7));E('path',{d:arcPath(cx,cy,R+38,ang(2*n3-3)-6,ang(2*n3+3)-9),fill:'none',stroke:'var(--muted)','stroke-width':2,'stroke-dasharray':'3 5'},gB)}
+    nodes.forEach((g,k)=>{g.classList.toggle('on',w.includes(k));g.classList.toggle('alt',cmp&&w2.includes(k)&&!w.includes(k));g.classList.toggle('ghost',!w.includes(k)&&!(cmp&&w2.includes(k)))});
+    const [vx,vy]=pol(cx,cy,R+52,ang(2*n2+3)),[bx,by]=pol(cx,cy,R,ang(2*n2+3));
+    seg(gC,bx,by,vx,vy,22,22,{class:'arr','marker-end':ar});const vii=m12(key+11);const g=node(gC,vx,vy,NN[vii]+'°','d',19);g.classList.add('on');g.onclick=()=>playChords([[vii,QI.d]]);
+    T(gC,cx,cy-12,NN[key]+' mayor','big');T(gC,cx,cy+16,'ii IV vi I iii V vii°','mid');
+    const ch=w.map(k=>seq[k]);let txt=`<b>${NN[key]} mayor</b>: ${ch.map(c=>cn(c[0],c[1])).join(' · ')} · ${NN[vii]}°`;
+    if(cmp){const sh=w.filter(k=>w2.includes(k)).map(k=>cn(seq[k][0],seq[k][1]));txt+=`<br>Con <b>${NN[m12(key+7)]} mayor</b> comparte: ${sh.join(', ')} (línea punteada = ventana vecina)`}
+    else txt+='<br>La ventana avanza dos eslabones por cada quinta.';$('chInfo').innerHTML=txt}
+  sel.onchange=()=>{key=+sel.value;draw()};
+  $('chPrev').onclick=()=>{key=m12(key-7);sel.value=key;draw()};$('chNext').onclick=()=>{key=m12(key+7);sel.value=key;draw()};
+  $('chCmp').onclick=e=>{cmp=!cmp;e.currentTarget.classList.toggle('on',cmp);draw()};
+  $('chPlay').onclick=()=>{const l=win(key).map(k=>[seq[k][0],QI[seq[k][1]]]);l.push([m12(key+11),QI.d]);playChords(l,.7)};
+  draw();
+})();
+
+/* ---------- III. Hexágono ---------- */
+(function(){
+  const svg=$('hx'),cx=320,cy=222,R=105,RO=186;const ar=defs(svg);let key=0,mode='dom';
+  const sel=$('hxKey');fillKeys(sel,' mayor',0);
+  const dia=[[0,'M','I'],[2,'m','ii'],[4,'m','iii'],[5,'M','IV'],[7,'M','V'],[9,'m','vi']];
+  const bor=[[0,'m','i',-90],[2,'d','ii°',-30],[3,'M','bIII',30],[5,'m','iv',90],[7,'m','v',150],[8,'M','bVI',210],[10,'M','bVII',240]];
+  const g=E('g',{},svg);
+  function draw(){g.innerHTML='';const P=dia.map((d,k)=>pol(cx,cy,R,-90+k*60));
+    E('polygon',{points:P.map(p=>p.join(',')).join(' '),fill:'none',stroke:'var(--line)','stroke-width':1.4},g);
+    [[0,3],[1,4],[2,5]].forEach(([a,b])=>seg(g,P[a][0],P[a][1],P[b][0],P[b][1],26,26,{stroke:'var(--line)','stroke-dasharray':'2 5','stroke-width':1.2}));
+    const outer=E('g',{},g),inner=E('g',{},g);
+    dia.forEach((d,k)=>{const r=m12(key+d[0]);const [x,y]=P[k];const n=node(inner,x,y,cn(r,d[1]),d[1],24);n.classList.add('on');n.onclick=()=>{playChords([[r,QI[d[1]]]]);$('hxInfo').innerHTML=`<b>${cn(r,d[1])}</b> (${d[2]}) = ${notesOf(r,QI[d[1]])}`};
+      const [lx,ly]=pol(cx,cy,R-44,-90+k*60);T(inner,lx,ly,d[2],'mid')});
+    if(mode==='dom'){dia.forEach((d,k)=>{const t=m12(key+d[0]),r=m12(t+7);const [x,y]=pol(cx,cy,RO,-90+k*60);seg(outer,x,y,P[k][0],P[k][1],24,28,{class:'arr','marker-end':ar});
+      const n=node(outer,x,y,cn(r,'7'),'7',24);n.onclick=()=>{playChords([[r,QI['7']],[t,QI[d[1]]]],.9);
+        $('hxInfo').innerHTML=`<b>${cn(r,'7')} → ${cn(t,d[1])}</b>: V7 de ${d[2]}. ${notesOf(r,QI['7'])}; la tercera (${NN[m12(r+4)]}) sube medio tono a ${NN[t]}.`}});
+      T(g,cx,cy,NN[key],'big')}
+    else{bor.forEach(b=>{const r=m12(key+b[0]);const [x,y]=pol(cx,cy,RO,b[3]);const k=dia.findIndex(d=>d[0]===b[0]);
+      if(k>=0)seg(outer,x,y,P[k][0],P[k][1],24,28,{stroke:'var(--muted)','stroke-dasharray':'3 4','stroke-width':1.3});
+      const n=node(outer,x,y,cn(r,b[1]),b[1],24);T(outer,x,y+36,b[2],'lb');
+      n.onclick=()=>{const tgt=k>=0?[[m12(key+dia[k][0]),QI[dia[k][1]]]]:[];playChords([...tgt,[r,QI[b[1]]],[key,QI.M]],.85);
+        $('hxInfo').innerHTML=`<b>${cn(r,b[1])}</b> (${b[2]}) viene de ${NN[key]} menor. ${k>=0?`Escuchas ${cn(m12(key+dia[k][0]),dia[k][1])} → ${cn(r,b[1])} → ${NN[key]}.`:`Escuchas ${cn(r,b[1])} → ${NN[key]}.`}`}});
+      T(g,cx,cy-10,NN[key],'big');T(g,cx,cy+16,'+ '+NN[key]+' menor','mid')}
+    $('hxInfo').innerHTML=mode==='dom'?'Cada satélite es el V7 del acorde al que apunta. Haz clic para escuchar la resolución.':'Los acordes de afuera vienen del menor paralelo. Haz clic para escuchar el contraste.'}
+  sel.onchange=()=>{key=+sel.value;draw()};
+  $('hxDom').onclick=()=>{mode='dom';$('hxDom').classList.add('on');$('hxBor').classList.remove('on');draw()};
+  $('hxBor').onclick=()=>{mode='bor';$('hxBor').classList.add('on');$('hxDom').classList.remove('on');draw()};
+  draw();
+})();
+
+/* ---------- IV. Bartók ---------- */
+(function(){
+  const svg=$('bt'),cx=320,cy=212,R=158;let key=0;const sel=$('btKey');fillKeys(sel,'',0);
+  const FO=[...Array(12)].map((_,k)=>m12(7*k));const g=E('g',{},svg);
+  const AX=[{o:0,n:'Tónica',c:'var(--aug)',dash:''},{o:5,n:'Subdominante',c:'var(--dom)',dash:'7 5'},{o:7,n:'Dominante',c:'var(--maj)',dash:'2 4'}];
+  function draw(){g.innerHTML='';E('circle',{cx,cy,r:R,fill:'none',stroke:'var(--line)'},g);const pos=pc=>pol(cx,cy,R,-90+FO.indexOf(pc)*30);
+    AX.forEach(a=>{const r=m12(key+a.o);[[0,6],[3,9]].forEach(([u,v])=>{const [x1,y1]=pos(m12(r+u)),[x2,y2]=pos(m12(r+v));seg(g,x1,y1,x2,y2,24,24,{stroke:a.c,'stroke-width':2.2,'stroke-dasharray':a.dash,opacity:.85})})});
+    FO.forEach(pc=>{const a=AX.find(a=>[0,3,6,9].includes(m12(pc-key-a.o)));const [x,y]=pos(pc);const n=node(g,x,y,NN[pc],a.c,21);if(pc===m12(key)||pc===m12(key+5)||pc===m12(key+7))n.classList.add('on');
+      n.onclick=()=>{playChords([[pc,QI.M]]);$('btInfo').innerHTML=`<b>${NN[pc]}</b> pertenece al eje de <b>${a.n.toLowerCase()}</b> de ${NN[key]}: ${[0,3,6,9].map(i=>NN[m12(key+a.o+i)]).join(', ')}`}});
+    $('btInfo').innerHTML=AX.map(a=>`<b>${a.n}</b>: ${[0,3,6,9].map(i=>NN[m12(key+a.o+i)]).join(' ')}`).join('<br>')}
+  sel.onchange=()=>{key=+sel.value;draw()};
+  document.querySelectorAll('#bartok [data-ax]').forEach(b=>b.onclick=()=>{const o=+b.dataset.ax;playChords([0,3,6,9].map(i=>[m12(key+o+i),QI[o===7?'7':'M']]),.75)});
+  $('btCad').onclick=()=>{playChords([[m12(key+8),QI.M],[m12(key+1),QI['7']],[key,QI.M]],.95);
+    $('btInfo').innerHTML=`<b>${NN[m12(key+8)]} → ${NN[m12(key+1)]}7 → ${NN[key]}</b>: ${NN[m12(key+8)]} sustituye a ${NN[m12(key+5)]} (eje S) y ${NN[m12(key+1)]}7 sustituye a ${NN[m12(key+7)]}7 por tritono (eje D).`};
+  draw();
+})();
+
+/* ---------- V. Cartografía modal ---------- */
+(function(){
+  const svg=$('md');const NAT=[0,2,4,5,7,9,11],LET='CDEFGAB';
+  const rot=(s,k)=>{const r=[];for(let i=0;i<7;i++)r.push(m12(s[(i+k)%7]-s[k]));return r};
+  const fams=[{n:'Escala mayor',c:'var(--maj)',s:[0,2,4,5,7,9,11],names:['Jónica','Dórica','Frigia','Lidia','Mixolidia','Eólica','Locria']},
+    {n:'Menor melódica',c:'var(--min)',s:[0,2,3,5,7,9,11],names:['Menor melódica','Dórica b2','Lidia #5','Lidia b7','Mixo b13','Locria #2','Alterada']},
+    {n:'Menor armónica',c:'var(--aug)',s:[0,2,3,5,7,8,11],names:['Menor armónica','Locria ♮6','Jónica #5','Dórica #4','Mixo b9 b13','Lidia #2','Superlocria bb7']}];
+  const modes=[];fams.forEach((f,fi)=>f.names.forEach((n,k)=>{const s=rot(f.s,k);modes.push({n,fi,s,b:s.reduce((a,b)=>a+b,0)})}));
+  const X=[108,320,532],Y=b=>470-(b-31)*45;
+  fams.forEach((f,fi)=>{const t=T(svg,X[fi],14,f.n,'mid');t.style.fill=f.c});
+  const edges=[];for(let a=0;a<modes.length;a++)for(let b=a+1;b<modes.length;b++){const d=[];for(let k=0;k<7;k++)if(modes[a].s[k]!==modes[b].s[k])d.push(k);if(d.length===1)edges.push({a,b,k:d[0]})}
+  const gE=E('g',{},svg),gN=E('g',{},svg);
+  edges.forEach(e=>{const A=modes[e.a],B=modes[e.b];const x1=X[A.fi],y1=Y(A.b),x2=X[B.fi],y2=Y(B.b);const my=(y1+y2)/2;
+    e.el=E('path',{d:`M${x1} ${y1}C${x1} ${my} ${x2} ${my} ${x2} ${y2}`,class:'edge'},gE)});
+  const deg=(s,k)=>{const d=s[k]-NAT[k];return(d<0?'b'.repeat(-d):'#'.repeat(d))+(k+1)};
+  const nm=(s,k)=>{const d=s[k]-NAT[k];return LET[k]+(d<0?'b'.repeat(-d):'#'.repeat(d))};
+  const tet=s=>{const k=s[2]+','+s[4]+','+s[6];return{'4,7,11':'Cmaj7','4,7,10':'C7','3,7,10':'Cm7','3,7,11':'Cm(maj7)','3,6,10':'Cm7(b5)','3,6,9':'C°7','4,8,11':'Cmaj7(#5)','4,8,10':'C7(#5)','4,6,10':'C7(b5)','4,6,9':'C°7'}[k]||'C?'};
+  modes.forEach((m,i)=>{m.el=rnode(gN,X[m.fi],Y(m.b),156,30,m.n,null,fams[m.fi].c);m.el.onclick=()=>{sel(i);playScale(0,m.s)}});
+  function sel(i){const m=modes[i];modes.forEach(o=>{o.el.classList.remove('on','alt');o.el.classList.add('ghost')});edges.forEach(e=>e.el.setAttribute('class','edge'));
+    m.el.classList.remove('ghost');m.el.classList.add('on');const nb=[];
+    edges.forEach(e=>{if(e.a===i||e.b===i){const o=e.a===i?e.b:e.a;e.el.setAttribute('class','edge hot');modes[o].el.classList.remove('ghost');modes[o].el.classList.add('alt');nb.push({o,k:e.k})}});
+    nb.sort((p,q)=>modes[q.o].b-modes[p.o].b);
+    $('mdInfo').innerHTML=`<b>C ${m.n}</b> (${fams[m.fi].n.toLowerCase()}) · ${m.s.map((_,k)=>nm(m.s,k)).join(' ')} · grados ${m.s.map((_,k)=>deg(m.s,k)).join(' ')} · acorde: <b>${tet(m.s)}</b><br>`+
+      nb.map(n=>`${modes[n.o].b>m.b?'↑':'↓'} ${modes[n.o].n}: ${deg(m.s,n.k)} → ${deg(modes[n.o].s,n.k)}`).join(' · ')}
+  sel(0);
+})();
+
+/* ---------- VI. Familia ---------- */
+(function(){
+  const svg=$('fm');let root=0,pair=7;const s=$('fmKey');fillKeys(s,'',0);
+  const ROWS=[[2,'2'],[3,'b3'],[4,'3'],[5,'4']],COLS=[[6,'b5'],[7,'5'],[8,'#5']];
+  const NAME={'2,6':['sus2(b5)','s'],'2,7':['sus2','s'],'2,8':['sus2(#5)','s'],'3,6':['°','d'],'3,7':['m','m'],'3,8':['m(#5)','s'],'4,6':['(b5)','s'],'4,7':['','M'],'4,8':['+','a'],'5,6':['sus4(b5)','s'],'5,7':['sus4','s'],'5,8':['sus4(#5)','s']};
+  const X=[220,370,520],Y=[70,160,250,340];const g=E('g',{},svg);
+  const IVN={2:'segunda mayor',3:'tercera menor',4:'tercera mayor',5:'cuarta justa',6:'quinta disminuida',7:'quinta justa',8:'quinta aumentada'};
+  const pb=$('fmPairs');[2,3,4,5,6,7,8].forEach(iv=>{const b=document.createElement('button');b.dataset.iv=iv;b.onclick=()=>{pair=iv;draw()};pb.appendChild(b)});
+  function draw(){g.innerHTML='';
+    pb.querySelectorAll('button').forEach(b=>{b.textContent=NN[root]+' & '+NN[m12(root+ +b.dataset.iv)];b.classList.toggle('on',+b.dataset.iv===pair)});
+    COLS.forEach((c,ci)=>T(g,X[ci],22,c[1],'mid'));ROWS.forEach((r,ri)=>T(g,96,Y[ri],r[1],'mid'));
+    ROWS.forEach((r,ri)=>COLS.forEach((c,ci)=>{if(ci<2)seg(g,X[ci],Y[ri],X[ci+1],Y[ri],62,62,{class:'edge'});if(ri<3)seg(g,X[ci],Y[ri],X[ci],Y[ri+1],27,27,{class:'edge'})}));
+    const hits=[];
+    ROWS.forEach((r,ri)=>COLS.forEach((c,ci)=>{const [suf,q]=NAME[r[0]+','+c[0]];const nm=NN[root]+suf;const ivs=[0,r[0],c[0]];
+      const n=rnode(g,X[ci],Y[ri],118,50,nm,notesOf(root,ivs),q);const hit=r[0]===pair||c[0]===pair;n.classList.toggle('on',hit);if(hit)hits.push(nm);
+      n.onclick=()=>{playChords([[root,ivs]]);$('fmInfo').innerHTML=`<b>${nm}</b> = ${notesOf(root,ivs)}. Vecinos a medio tono: ${neigh(ri,ci).join(', ')}`}}));
+    $('fmInfo').innerHTML=`<b>${NN[root]} y ${NN[m12(root+pair)]}</b> (${IVN[pair]}) aparecen juntos en: ${hits.join(', ')}`}
+  function neigh(ri,ci){const o=[];[[ri-1,ci],[ri+1,ci],[ri,ci-1],[ri,ci+1]].forEach(([r,c])=>{if(ROWS[r]&&COLS[c])o.push(NN[root]+NAME[ROWS[r][0]+','+COLS[c][0]][0])});return o}
+  s.onchange=()=>{root=+s.value;draw()};draw();
+})();
+
+/* ---------- VII. Aumentado ---------- */
+(function(){
+  const svg=$('au'),cx=320,cy=218;let a=0;const g=E('g',{},svg);const sp=$('auSel');
+  [0,1,2,3].forEach(r=>{const b=document.createElement('button');b.textContent=NN[r]+'+';b.onclick=()=>{a=r;draw()};sp.appendChild(b)});
+  function draw(){g.innerHTML='';sp.querySelectorAll('button').forEach((b,i)=>b.classList.toggle('on',i===a));
+    const spokes=[{n:m12(a+8),maj:a,min:m12(a+9)},{n:m12(a+4),maj:m12(a+8),min:m12(a+5)},{n:a,maj:m12(a+4),min:m12(a+1)}];
+    const c=node(g,cx,cy,NN[a]+'+','a',34);c.classList.add('on');c.onclick=()=>playChords([[a,QI.a]]);
+    spokes.forEach((s,k)=>{const th=-90+k*120;const [px,py]=[Math.cos((th+90)*Math.PI/180),Math.sin((th+90)*Math.PI/180)];const [bx,by]=pol(cx,cy,165,th);
+      const [lx,ly]=pol(cx,cy,88,th);T(g,lx+px*0,ly,`${NN[s.n]}`,'mid');
+      [[s.maj,'M',-1,'baja'],[s.min,'m',1,'sube']].forEach(([r,q,sgn,verb])=>{const x=bx+px*52*sgn,y=by+py*52*sgn;seg(g,cx,cy,x,y,40,28,{class:'edge'});
+        const n=node(g,x,y,cn(r,q),q,26);const tgt=verb==='baja'?m12(s.n-1):m12(s.n+1);T(g,x+(x-cx)*.0,y+(y>cy?40:-40),`${NN[s.n]} ${verb==='baja'?'↓':'↑'} ${NN[tgt]}`,'lb');
+        n.onclick=()=>{playChords([[a,QI.a],[r,QI[q]]],.9);$('auInfo').innerHTML=`<b>${NN[a]}+ → ${cn(r,q)}</b>: ${NN[s.n]} ${verb} medio tono a ${NN[tgt]}; las otras dos notas se quedan.`}})});
+    $('auDom').textContent=`▶ ${NN[a]}7 → ${NN[a]}+ → ${NN[m12(a+5)]}`;
+    $('auInfo').innerHTML=`<b>${NN[a]}+ = ${NN[m12(a+4)]}+ = ${NN[m12(a+8)]}+</b> (${notesOf(a,QI.a)}). Mayores: ${cn(a,'M')}, ${cn(a+8,'M')}, ${cn(a+4,'M')} · menores: ${cn(a+9,'m')}, ${cn(a+5,'m')}, ${cn(a+1,'m')}`}
+  $('auAll').onclick=()=>{const l=[];[[a,'M'],[a+9,'m'],[a+8,'M'],[a+5,'m'],[a+4,'M'],[a+1,'m']].forEach(t=>{l.push([a,QI.a]);l.push([m12(t[0]),QI[t[1]]])});playChords(l,.62)};
+  $('auDom').onclick=()=>{playChords([[a,QI['7']],[a,QI.a],[m12(a+5),QI.M]],.95);$('auInfo').innerHTML=`<b>${NN[a]}7 → ${NN[a]}+ → ${NN[m12(a+5)]}</b>: la quinta (${NN[m12(a+7)]}) sube a ${NN[m12(a+8)]} y luego a ${NN[m12(a+9)]}, tercera de ${NN[m12(a+5)]}.`};
+  draw();
+})();
+
+/* ---------- VIII. Quintas ---------- */
+(function(){
+  const svg=$('qt'),cx=320,cy=212,R=160;const FO=[...Array(12)].map((_,k)=>m12(7*k-7));let w=0,n=3;const g=E('g',{},svg);
+  const ang=k=>-90+k*30;
+  function draw(){g.innerHTML='';const idx=[...Array(n)].map((_,i)=>(w+i)%12);
+    E('path',{d:arcPath(cx,cy,R,ang(w)-12,ang(w+n-1)+12),class:'band','stroke-width':58},g);
+    const P=idx.map(k=>pol(cx,cy,R,ang(k)));if(n>2)E('polygon',{points:P.map(p=>p.join(',')).join(' '),fill:'var(--sus)','fill-opacity':.08,stroke:'var(--sus)','stroke-width':1.6},g);
+    FO.forEach((pc,k)=>{const [x,y]=pol(cx,cy,R,ang(k));const nd=node(g,x,y,NN[pc],'s',21);nd.classList.toggle('on',idx.includes(k));nd.onclick=()=>{w=k;draw();play()}});
+    const A=FO[w],B=FO[(w+1)%12],C=FO[(w+2)%12];let big,sub,txt;
+    if(n===3){big=`${NN[A]}sus2 = ${NN[B]}sus4`;sub=notesOf(A,[0,2,7]);txt=`Las tres notas ${NN[A]} ${NN[B]} ${NN[C]} se leen desde ${NN[A]} como sus2 o desde ${NN[B]} como sus4.`}
+    else if(n===5){big=`${NN[A]} pentatónica`;sub=`= ${NN[m12(A+9)]} pentatónica menor`;txt=`Cinco quintas seguidas: ${idx.map(k=>NN[FO[k]]).join(' ')}. Sin semitonos, por eso suena estable sobre casi cualquier acorde de ${NN[A]}.`}
+    else{big=`${NN[B]} mayor`;sub=`= ${NN[A]} lidia`;txt=`Siete quintas seguidas forman la escala de ${NN[B]} mayor. La primera nota de la ventana (${NN[A]}) es el 4.º grado; leída desde ella es el modo lidio.`}
+    T(g,cx,cy-12,big,'big');T(g,cx,cy+16,sub,'mid');$('qtInfo').innerHTML=`<b>${big}</b> · ${txt}`}
+  function play(){const A=FO[w];if(n===3)playChords([[A,[0,2,7]]]);else if(n===5)playScale(A,[0,2,4,7,9]);else playScale(FO[(w+1)%12],[0,2,4,5,7,9,11])}
+  document.querySelectorAll('#quintas [data-n]').forEach(b=>b.onclick=()=>{n=+b.dataset.n;document.querySelectorAll('#quintas [data-n]').forEach(x=>x.classList.toggle('on',x===b));draw()});
+  $('qtPlay').onclick=play;draw();
+})();
+
+/* ---------- IX. Escalera ---------- */
+(function(){
+  const svg=$('es');let key=0,d=0,n=7;const MAJ=[0,2,4,5,7,9,11],ROM=['I','ii','iii','IV','V','vi','vii'];const ks=$('esKey');fillKeys(ks,' mayor',0);
+  const dg=$('esDeg'),nn=$('esN');
+  ROM.forEach((r,i)=>{const b=document.createElement('button');b.textContent=r;b.onclick=()=>{d=i;draw()};dg.appendChild(b)});
+  [3,4,5,6,7].forEach(k=>{const b=document.createElement('button');b.textContent=k;b.onclick=()=>{n=k;draw()};nn.appendChild(b)});
+  const LBL=['R','3','5','7','9','11','13'];
+  const tri=(p)=>{const i1=m12(p[1]-p[0]),i2=m12(p[2]-p[0]);const q=i1===4?(i2===8?'a':'M'):(i2===6?'d':'m');return[p[0],q]};
+  function ext(p){const r=p[0],iv=p.map(x=>m12(x-r));const minor=iv[1]===3;let base=NN[r],par=[];
+    if(iv.length===3)return cn(...tri(p));
+    if(minor&&iv[2]===6){base+=iv[3]===9?'°7':'m7';if(iv[3]!==9)par.push('b5')}
+    else if(!minor&&iv[2]===8){base+=iv[3]===11?'maj7':'7';par.push('#5')}
+    else{if(minor)base+='m';base+=iv[3]===11?(minor?'(maj7)':'maj7'):'7'}
+    if(iv[4]!==undefined)par.push({1:'b9',2:'9',3:'#9'}[iv[4]]);if(iv[5]!==undefined)par.push({5:'11',6:'#11',4:'b11'}[iv[5]]);if(iv[6]!==undefined)par.push({8:'b13',9:'13'}[iv[6]]);
+    if(base.endsWith(')')&&par.length)return base.slice(0,-1)+','+par.join(',')+')';return base+(par.length?'('+par.join(',')+')':'')}
+  const TAB={1:{3:'b3',4:'3'},2:{6:'b5',7:'5',8:'#5'},3:{9:'bb7',10:'b7',11:'7'},4:{1:'b9',2:'9',3:'#9'},5:{4:'b11',5:'11',6:'#11'},6:{8:'b13',9:'13'}};
+  const intl=(p,k)=>k===0?'R':(TAB[k][m12(p[k]-p[0])]||LBL[k]);
+  let stack=[];
+  function draw(){svg.innerHTML='';dg.querySelectorAll('button').forEach((b,i)=>b.classList.toggle('on',i===d));nn.querySelectorAll('button').forEach(b=>b.classList.toggle('on',+b.textContent===n));
+    stack=[...Array(n)].map((_,k)=>m12(key+MAJ[(d+2*k)%7]));const yB=382,st=50,cxm=320;
+    const [tr,tq]=tri(stack.slice(0,3));
+    stack.forEach((p,k)=>{const y=yB-k*st;const q=k<3?tq:'s';const nd=rnode(svg,cxm,y,150,36,NN[p],null,k<3?QC[tq]:'var(--ink)');nd.classList.toggle('on',k<3);
+      nd.onclick=()=>playMidi([60+p-(p>6?12:0)],.3,.8);T(svg,cxm-104,y,intl(stack,k),'mid')});
+    const br=(x,k1,k2,side,label,col)=>{const y1=yB-k1*st+16,y2=yB-k2*st-16;const dx=side*12;E('path',{d:`M${x} ${y1}h${dx}V${y2}h${-dx}`,fill:'none',stroke:col,'stroke-width':2},svg);
+      const t=T(svg,x+dx+side*10,(y1+y2)/2,label,'nm',{'text-anchor':side>0?'start':'end'});t.style.fill=col};
+    br(cxm+86,0,2,1,cn(tr,tq),QC[tq]);
+    if(n>=4){const top=stack.slice(n-3);const [ur,uq]=tri(top);br(cxm-150,n-3,n-1,-1,'arriba: '+cn(ur,uq),QC[uq]);}
+    const full=ext(stack);T(svg,cxm,22,full,'big');
+    let txt=`<b>${full}</b> = ${stack.map(p=>NN[p]).join(' ')} (grado ${ROM[d]} de ${NN[key]} mayor)`;
+    if(n>=5)txt+=`<br>Desde la 2.ª nota se lee <b>${ext(stack.slice(1))}</b>: el mismo bloque de notas tiene dos nombres.`;
+    else if(n===4)txt+=`<br>Las tres notas de arriba forman <b>${cn(...tri(stack.slice(1)))}</b>.`;
+    $('esInfo').innerHTML=txt}
+  ks.onchange=()=>{key=+ks.value;draw()};
+  $('esPlay').onclick=()=>{let m=48+stack[0]-(stack[0]>7?12:0);const seq=[m];for(let k=1;k<stack.length;k++){m+=m12(stack[k]-stack[k-1]);seq.push(m)}
+    const a=ctx();if(!a)return;const t0=a.currentTime+.05;seq.forEach((x,i)=>tone(x,t0+i*.16,2.4-i*.16,.08))};
+  draw();
+})();
+</script>
+
+</body>
+</html>
