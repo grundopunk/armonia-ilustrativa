@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Nueve patrones de armonía ilustrados e interactivos, con audio.">
+<meta name="description" content="Diez patrones de armonía ilustrados e interactivos, con audio.">
 <title>Atlas armónico</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -87,7 +87,7 @@ footer{border-top:1px solid var(--line);padding-block:28px;color:var(--muted);fo
 
 <div class="wrap">
 <header>
-  <div class="eyebrow">9 patrones · 91 gráficos analizados</div>
+  <div class="eyebrow">10 patrones · 92 gráficos analizados</div>
   <h1>Atlas <span class="q">ar</span><span class="r">mó</span><span class="s">ni</span>co</h1>
   <p class="lede">Cada lámina toma un patrón de tus imágenes y lo convierte en una figura que puedes tocar. Haz clic en cualquier acorde para escucharlo. Los colores indican la calidad del acorde.</p>
   <div class="legend" aria-label="Leyenda de colores">
@@ -107,6 +107,7 @@ footer{border-top:1px solid var(--line);padding-block:28px;color:var(--muted);fo
   <a href="#aumentado"><em>Lámina VII</em><b>El aumentado bisagra</b><small>Una nota que sube o baja abre 6 caminos.</small></a>
   <a href="#quintas"><em>Lámina VIII</em><b>Ventanas de quintas</b><small>sus2 = sus4, pentatónicas y escalas mayores.</small></a>
   <a href="#escalera"><em>Lámina IX</em><b>Escalera de terceras</b><small>Acordes extendidos y tríadas superiores.</small></a>
+  <a href="#trentham"><em>Lámina X</em><b>Círculo de armonía</b><small>Armadura, notas del acorde y familia de cada tonalidad.</small></a>
 </nav>
 
 <section class="lam" id="tonnetz">
@@ -255,7 +256,24 @@ footer{border-top:1px solid var(--line);padding-block:28px;color:var(--muted);fo
   </div>
 </section>
 
-<footer>Patrones identificados en los gráficos de <i>Armonía Ilustrada</i> de Brian Callipari. Las figuras de esta página son ilustraciones nuevas, calculadas a partir de la teoría. El audio es una síntesis simple del navegador.</footer>
+<section class="lam" id="trentham">
+  <div class="copy">
+    <div class="eyebrow">Lámina X · rueda de tonalidades</div>
+    <h2>Círculo de armonía</h2>
+    <p>Cada sector del círculo de quintas es una tonalidad. Leído de adentro hacia afuera: la armadura, la raíz y luego la 3, la 5, la b7 y la 9, apiladas en terceras. Juntas forman el acorde de novena de dominante.</p>
+    <p>Los sectores vecinos se diferencian en una sola alteración, así que sus acordes comparten casi todas las notas. Por eso un acorde dominante de un sector resuelve con naturalidad al sector de la izquierda (G7 → C).</p>
+    <p class="src">En tu imagen: “Circle of Harmony, showing relationship of chords &amp; keys” de R. A. Trentham, con la familia +, 7, 6, m6, ° en el borde.</p>
+  </div>
+  <div class="fig">
+    <svg id="th" viewBox="0 0 640 640" role="img" aria-label="Círculo de armonía con anillos de armadura, raíz, tercera, quinta, séptima y novena"></svg>
+    <div class="ctl"><span class="lab">Anillos</span><span class="lb" style="font:500 12px var(--f-mono);color:var(--muted)">armadura · raíz · 3 · 5 · b7 · 9 · relativo menor</span></div>
+    <div class="ctl" id="thFam"><span class="lab">Familia</span></div>
+    <div class="ctl"><button class="play" id="thRes">▶ Resolver a la izquierda</button><button class="play" id="thNine">▶ Arpegio de novena</button></div>
+    <div class="info" id="thInfo"></div>
+  </div>
+</section>
+
+<footer>Patrones identificados en los gráficos de <i>Armonía Ilustrada</i> de Brian Callipari y en el <i>Circle of Harmony</i> de R. A. Trentham. Las figuras de esta página son ilustraciones nuevas, calculadas a partir de la teoría. El audio es una síntesis simple del navegador.</footer>
 </div>
 
 <script>
@@ -532,6 +550,39 @@ const pcs=(r,q)=>QI[q].map(i=>m12(r+i));
   ks.onchange=()=>{key=+ks.value;draw()};
   $('esPlay').onclick=()=>{let m=48+stack[0]-(stack[0]>7?12:0);const seq=[m];for(let k=1;k<stack.length;k++){m+=m12(stack[k]-stack[k-1]);seq.push(m)}
     const a=ctx();if(!a)return;const t0=a.currentTime+.05;seq.forEach((x,i)=>tone(x,t0+i*.16,2.4-i*.16,.08))};
+  draw();
+})();
+/* ---------- X. Círculo de armonía ---------- */
+(function(){
+  const svg=$('th'),cx=320,cy=320;const LET='CDEFGAB',NP=[0,2,4,5,7,9,11];
+  const KEYS=[['C',0,0,'NAT'],['G',4,7,'1#'],['D',1,2,'2#'],['A',5,9,'3#'],['E',2,4,'4#'],['B',6,11,'5#'],['F#',3,6,'6#'],['Db',1,1,'5b'],['Ab',5,8,'4b'],['Eb',2,3,'3b'],['Bb',6,10,'2b'],['F',3,5,'1b']];
+  const ACC={0:'',1:'#',2:'##',11:'b',10:'bb'};
+  const sp=(li,pc)=>LET[li%7]+ACC[m12(pc-NP[li%7])];
+  const RINGS=[[58,96],[96,140],[140,180],[180,218],[218,254],[254,290],[290,312]];
+  const sector=(r1,r2,a1,a2)=>{const [x1,y1]=pol(cx,cy,r2,a1),[x2,y2]=pol(cx,cy,r2,a2),[x3,y3]=pol(cx,cy,r1,a2),[x4,y4]=pol(cx,cy,r1,a1);
+    return `M${x1} ${y1}A${r2} ${r2} 0 0 1 ${x2} ${y2}L${x3} ${y3}A${r1} ${r1} 0 0 0 ${x4} ${y4}Z`};
+  const FAM=[['',[0,4,7],'M'],['+',[0,4,8],'a'],['6',[0,4,7,9],'M'],['7',[0,4,7,10],'7'],['9',[0,4,7,10,14],'7'],['m6',[0,3,7,9],'m'],['°7',[0,3,6,9],'d']];
+  let sel=0;const g=E('g',{},svg);
+  const data=KEYS.map(([n,li,pc,sig])=>{const tones=[0,4,7,10,14].map((iv,k)=>sp(li+2*k,pc+iv));return{n,li,pc,sig,tones,rel:sp(li+5,pc+9)+'m'}});
+  function draw(){g.innerHTML='';
+    data.forEach((d,k)=>{const a=-90+k*30,a1=a-15,a2=a+15,on=k===sel,nb=k===m12(sel+1)||k===m12(sel-1);
+      const grp=E('g',{class:'nd'},g);grp.style.color=on?'var(--maj)':nb?'var(--min)':'var(--muted)';keyable(grp,d.n+' mayor');
+      const labels=[d.sig,d.n,...d.tones.slice(1),d.rel];
+      RINGS.forEach(([r1,r2],ri)=>{const path=E('path',{d:sector(r1,r2,a1,a2),'stroke-width':1},grp);
+        path.style.fill=on?(ri===1?'var(--maj)':'color-mix(in srgb, var(--maj) 14%, var(--panel))'):nb?'color-mix(in srgb, var(--min) 8%, var(--panel))':'var(--panel)';
+        path.style.stroke='var(--line)';
+        const [tx,ty]=pol(cx,cy,(r1+r2)/2,a);const t=T(grp,tx,ty,labels[ri],ri===1?'nm':'sm');
+        t.style.fill=on&&ri===1?'var(--panel)':ri===1?'var(--ink)':(on?'var(--ink)':'var(--muted)');if(ri===1)t.style.fontSize='15px'});
+      grp.onclick=()=>{sel=k;draw();playChords([[d.pc,[0,4,7,10,14]]],1.2)}});
+    E('circle',{cx,cy,r:58,fill:'var(--bg)',stroke:'var(--line)'},g);
+    const d=data[sel];T(g,cx,cy-10,d.n,'big');T(g,cx,cy+16,d.sig==='NAT'?'natural':d.sig,'mid');
+    const L=data[m12(sel-1)],R=data[m12(sel+1)];
+    $('thInfo').innerHTML=`<b>${d.n}9</b> = ${d.tones.join(' ')} · armadura ${d.sig} · relativo ${d.rel}<br>Izquierda: <b>${L.n}</b> (resuelve ${d.n}7 → ${L.n}) · derecha: <b>${R.n}</b> (su dominante, ${R.n}7 → ${d.n})`;
+    const f=$('thFam');f.querySelectorAll('button').forEach(b=>b.remove());
+    FAM.forEach(([suf,ivs,q])=>{const b=document.createElement('button');b.textContent=d.n+suf;b.style.color=QC[q];b.onclick=()=>{playChords([[d.pc,ivs]]);
+      $('thInfo').innerHTML=`<b>${d.n}${suf}</b> = ${ivs.map(iv=>sp(d.li+{0:0,3:2,4:2,6:4,7:4,8:4,9:5,10:6,14:8}[iv],d.pc+iv)).join(' ')}`};f.appendChild(b)})}
+  $('thRes').onclick=()=>{const d=data[sel],L=data[m12(sel-1)];playChords([[d.pc,QI['7']],[L.pc,QI.M]],1)};
+  $('thNine').onclick=()=>{const d=data[sel];const b=48+d.pc-(d.pc>7?12:0);playMidi([0,4,7,10,14].map(i=>b+i),.18,2)};
   draw();
 })();
 </script>
